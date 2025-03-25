@@ -374,7 +374,7 @@
         function fetchData() {
             // 使用公開的 CORS 代理服務
             const targetUrl = 'https://tisvcloud.freeway.gov.tw/history/motc20/VDLive.xml';
-            const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
+            const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`;
             
             showDebugInfo(`正在嘗試獲取資料：${proxyUrl}`);
             
@@ -384,9 +384,12 @@
                     if (!response.ok) {
                         throw new Error(`HTTP 錯誤！狀態碼：${response.status}`);
                     }
+                    return response.json();
+                })
+                .then(data => {
                     // 重設重試計數器
                     retryCount = 0;
-                    return response.text();
+                    return data.contents;
                 })
                 .then(str => {
                     showDebugInfo(`成功獲取 XML 資料，長度：${str.length} 字元\n前 500 字元：\n${str.substring(0, 500)}`);
