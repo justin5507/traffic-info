@@ -364,10 +364,9 @@
         }
 
         function fetchData() {
-            // 自動檢測代理伺服器地址
-            const proxyUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
-                ? 'http://localhost:5000/proxy/vd'
-                : `http://${window.location.hostname}:5000/proxy/vd`;
+            // 使用公開的 CORS 代理服務
+            const targetUrl = 'https://tisvcloud.freeway.gov.tw/history/motc20/VDLive.xml';
+            const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
             
             showDebugInfo(`正在嘗試獲取資料：${proxyUrl}`);
             
