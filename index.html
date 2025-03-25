@@ -364,9 +364,9 @@
         }
 
         function fetchData() {
-            // 使用公開的 CORS 代理服務
+            // 使用 CORS Anywhere 代理服務
             const targetUrl = 'https://tisvcloud.freeway.gov.tw/history/motc20/VDLive.xml';
-            const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
+            const proxyUrl = `https://cors-anywhere.herokuapp.com/${targetUrl}`;
             
             showDebugInfo(`正在嘗試獲取資料：${proxyUrl}`);
             
