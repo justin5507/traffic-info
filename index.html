@@ -140,8 +140,6 @@
             <p>資料更新時間：<span id="updateTime"></span></p>
             <p>更新週期：<span id="updateInterval"></span> 秒</p>
             <p>下次自動更新：<span id="nextUpdate"></span></p>
-            <p>自動更新狀態：<span id="updateStatus" class="status-normal">運行中</span></p>
-            <p class="note">註：本網頁會自動每分鐘更新一次資料。如果遇到連線問題，系統會自動嘗試其他連線方式。</p>
         </div>
         <div class="controls">
             <button class="btn" onclick="fetchData()">更新資料</button>
@@ -248,14 +246,6 @@
         let sortColumn = -1;
         let sortDirection = 1;
         let autoUpdateInterval;
-        let retryCount = 0;
-        const MAX_RETRIES = 3;
-        const PROXY_SERVICES = [
-            (url) => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
-            (url) => `https://cors-anywhere.herokuapp.com/${url}`,
-            (url) => `https://api.codetabs.com/v1/proxy?quest=${url}`
-        ];
-        let currentProxyIndex = 0;
 
         function startAutoUpdate() {
             // 清除現有的自動更新計時器
@@ -264,31 +254,14 @@
             }
             
             // 設定每分鐘自動更新一次
-            autoUpdateInterval = setInterval(() => {
-                try {
-                    fetchData();
-                } catch (error) {
-                    console.error('自動更新失敗:', error);
-                    // 如果自動更新失敗，5秒後重新啟動
-                    clearInterval(autoUpdateInterval);
-                    setTimeout(startAutoUpdate, 5000);
-                }
-            }, 60000);
-            
+            autoUpdateInterval = setInterval(fetchData, 60000);
             updateNextUpdateTime();
-            
-            // 顯示自動更新狀態
-            showDebugInfo('自動更新已啟動，每分鐘更新一次');
         }
 
         function updateNextUpdateTime() {
             const nextUpdate = new Date();
             nextUpdate.setMinutes(nextUpdate.getMinutes() + 1);
             document.getElementById('nextUpdate').textContent = nextUpdate.toLocaleString('zh-TW');
-            
-            // 顯示自動更新狀態
-            const timeUntilUpdate = Math.round((nextUpdate - new Date()) / 1000);
-            showDebugInfo(`下次更新時間：${nextUpdate.toLocaleString('zh-TW')}\n距離下次更新還有 ${timeUntilUpdate} 秒`);
         }
 
         function sortTable(column) {
@@ -391,10 +364,12 @@
         }
 
         function fetchData() {
-            const targetUrl = 'https://tisvcloud.freeway.gov.tw/history/motc20/VDLive.xml';
-            const proxyUrl = PROXY_SERVICES[currentProxyIndex](targetUrl);
+            // 自動檢測代理伺服器地址
+            const proxyUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+                ? 'http://localhost:5000/proxy/vd'
+                : `http://${window.location.hostname}:5000/proxy/vd`;
             
-            showDebugInfo(`正在嘗試獲取資料：${proxyUrl}\n使用代理服務 #${currentProxyIndex + 1}`);
+            showDebugInfo(`正在嘗試獲取資料：${proxyUrl}`);
             
             fetch(proxyUrl)
                 .then(response => {
@@ -402,8 +377,6 @@
                     if (!response.ok) {
                         throw new Error(`HTTP 錯誤！狀態碼：${response.status}`);
                     }
-                    // 重設重試計數器
-                    retryCount = 0;
                     return response.text();
                 })
                 .then(str => {
@@ -496,22 +469,7 @@
                 })
                 .catch(error => {
                     console.error('資料獲取失敗:', error);
-                    
-                    // 如果當前代理服務失敗，嘗試下一個
-                    currentProxyIndex = (currentProxyIndex + 1) % PROXY_SERVICES.length;
-                    
-                    // 如果所有代理服務都試過了，增加重試計數
-                    if (currentProxyIndex === 0) {
-                        retryCount++;
-                    }
-                    
-                    if (retryCount < MAX_RETRIES) {
-                        showDebugInfo(`嘗試使用下一個代理服務 #${currentProxyIndex + 1}，重試次數：${retryCount}`);
-                        setTimeout(fetchData, 5000); // 5秒後重試
-                        return;
-                    }
-                    
-                    showError(`資料獲取失敗：${error.message}\n已重試 ${retryCount} 次，請稍後再試`);
+                    showError(`資料獲取失敗：${error.message}`);
                 });
         }
 
