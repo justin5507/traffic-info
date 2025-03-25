@@ -375,9 +375,9 @@
         }
 
         function fetchData() {
-            // 使用公開的 CORS 代理服務
+            // 使用 Cloudflare Worker
             const targetUrl = 'https://tisvcloud.freeway.gov.tw/history/motc20/VDLive.xml';
-            const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`;
+            const proxyUrl = PROXY_SERVICES[currentProxyIndex](targetUrl);
             
             showDebugInfo(`正在嘗試獲取資料：${proxyUrl}`);
             
@@ -385,7 +385,7 @@
                 method: 'GET',
                 mode: 'cors',
                 headers: {
-                    'Accept': 'application/json',
+                    'Accept': 'application/xml',
                     'Origin': window.location.origin
                 }
             })
@@ -394,7 +394,7 @@
                     if (!response.ok) {
                         throw new Error(`HTTP 錯誤！狀態碼：${response.status}`);
                     }
-                    return response.json();
+                    return response.text();
                 })
                 .then(data => {
                     // 重設重試計數器
