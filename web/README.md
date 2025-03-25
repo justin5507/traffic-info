@@ -1,14 +1,34 @@
 # 本地開發環境設定
 
-本資料夾包含了兩種版本的本地代理伺服器，您可以選擇使用 Python 或 Node.js 版本。
+本資料夾包含了開發環境所需的檔案，包括本地代理伺服器和開發版本的網頁。
 
-## Python 版本
+## 檔案結構
 
-### 前置需求
+```
+web/
+├── dev.html          # 開發版本的網頁
+├── proxy_server.py   # Python 版代理伺服器
+├── server.js         # Node.js 版代理伺服器
+├── requirements.txt  # Python 相依套件
+└── package.json     # Node.js 相依套件
+```
+
+## 使用方式
+
+### 1. 使用網頁版（推薦）
+- 直接訪問 https://justin5507.github.io/traffic-info/
+- 不需要安裝任何軟體
+- 使用公開的 CORS 代理服務
+
+### 2. 使用本地開發版本
+
+#### Python 版本
+
+##### 前置需求
 - Python 3.x
 - pip（Python 套件管理器）
 
-### 安裝步驟
+##### 安裝步驟
 1. 安裝相依套件：
    ```bash
    pip install -r requirements.txt
@@ -20,16 +40,16 @@
    ```
 
 3. 在瀏覽器中開啟：
-   - 本機：http://localhost:5000
-   - 手機：http://[本機IP]:5000
+   - 本機：http://localhost:5000/dev.html
+   - 手機：http://[本機IP]:5000/dev.html
 
-## Node.js 版本
+#### Node.js 版本
 
-### 前置需求
+##### 前置需求
 - Node.js
 - npm（Node.js 套件管理器）
 
-### 安裝步驟
+##### 安裝步驟
 1. 安裝相依套件：
    ```bash
    npm install
@@ -41,8 +61,8 @@
    ```
 
 3. 在瀏覽器中開啟：
-   - 本機：http://localhost:3000
-   - 手機：http://[本機IP]:3000
+   - 本機：http://localhost:3000/dev.html
+   - 手機：http://[本機IP]:3000/dev.html
 
 ## 功能說明
 
