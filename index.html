@@ -372,10 +372,11 @@
         }
 
         function fetchData() {
+            // 使用公開的 CORS 代理服務
             const targetUrl = 'https://tisvcloud.freeway.gov.tw/history/motc20/VDLive.xml';
-            const proxyUrl = PROXY_SERVICES[currentProxyIndex](targetUrl);
+            const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
             
-            showDebugInfo(`正在嘗試獲取資料：${proxyUrl}\n使用代理服務 #${currentProxyIndex + 1}`);
+            showDebugInfo(`正在嘗試獲取資料：${proxyUrl}`);
             
             fetch(proxyUrl)
                 .then(response => {
