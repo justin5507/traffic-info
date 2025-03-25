@@ -249,7 +249,6 @@
         let retryCount = 0;
         const MAX_RETRIES = 3;
         const PROXY_SERVICES = [
-            (url) => `https://traffic-info-worker.justin5507.workers.dev/?url=${encodeURIComponent(url)}`,
             (url) => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
             (url) => `https://corsproxy.io/?${encodeURIComponent(url)}`,
             (url) => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
