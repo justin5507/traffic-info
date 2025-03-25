@@ -13,6 +13,9 @@ logger = logging.getLogger(__name__)
 app = Flask(__name__)
 CORS(app)
 
+# 設定請求超時（秒）
+REQUEST_TIMEOUT = 10
+
 def get_local_ip():
     try:
         # 獲取本機 IP 地址
@@ -30,7 +33,7 @@ def proxy_vd():
         url = 'https://tisvcloud.freeway.gov.tw/history/motc20/VDLive.xml'
         logger.info(f'正在請求：{url}')
         
-        response = requests.get(url)
+        response = requests.get(url, timeout=REQUEST_TIMEOUT)
         logger.info(f'回應狀態碼：{response.status_code}')
         logger.info(f'回應標頭：{response.headers}')
         
@@ -59,6 +62,9 @@ def proxy_vd():
             return '處理後的資料為空', 500
             
         return Response(content, content_type='application/xml')
+    except requests.exceptions.Timeout:
+        logger.error('請求超時')
+        return '請求超時，請稍後再試', 504
     except requests.exceptions.RequestException as e:
         logger.error(f'請求異常：{str(e)}')
         return f'請求異常：{str(e)}', 500
